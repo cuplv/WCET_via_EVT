@@ -8,27 +8,21 @@ import numpy as np
 from scipy.stats import norm
 from Timeout import timeout
 
-# To do: Sep 16: add time profile for each input! (extra column in the CSV file)
-
 import quick_sort, insertionX, seq_search, qsort_threeways, BST_insert
 import merge_sort, prim_MST, Boyer_Moore, is_BST, binary_search
-# import bm_chaos, pairwise_distance, dbscan_driver
-# import TreeRegressor
-# import LogisticRegression
-# import Discriminant_Analysis
-# import TreeRegressor
-# import spectral_clustering
-# import minibatch_kmeans
 
 MAX_SIZE = 10       # for parameterize value, use the max value from xml file
 Actual_Time = True
 INPUT_SIZE = True   # paramterized inputs or not, True for array of values and False for a parameter value with XML file
+### You can increase/decrease the num. iterations
 NUM_ITER = 2000
 TRIASL_EACH_ITER = 255
+### You can increase/decrease the num. initial experiments
 ITER_to_Model = 25
-# False for Booyer_moore
+### This should be True for any algorithm except Boyer_Moore
 Only_Num = True
 
+### You can change the program under fuzz
 input_program = quick_sort.quickSort
 #input_program = insertionX.insertionX
 #input_program = qsort_threeways.quickSortThreeways
@@ -39,24 +33,6 @@ input_program = quick_sort.quickSort
 #input_program = Boyer_Moore.BoyerMoore
 #input_program = binary_search.binarySearch
 #input_program = prim_MST.primMST
-#input_program = rbtree.rbtreeHelper
-#input_program = test1.test1
-#input_program = bm_chaos.bm_chaos
-#input_program = pairwise_distance.pairwise_distance
-#input_program = dbscan_driver.dbscan_driver
-#input_program_tree = 'dbscan_Params.xml'
-# input_program = TreeRegressor.TreeRegress
-# input_program_tree = 'TreeRegressor_Params.xml'
-# input_program = LogisticRegression.logistic_regression
-# input_program_tree = 'logistic_regression_Params.xml'
-# input_program = Discriminant_Analysis.disc_analysis
-# input_program_tree = 'Discriminant_Analysis_Params.xml'
-# input_program = TreeRegressor.TreeRegress
-# input_program_tree = 'TreeRegressor_Params.xml'
-# input_program = spectral_clustering.spectral_clustering
-# input_program_tree = 'spectral_clustering_Params.xml'
-# input_program = minibatch_kmeans.minibatch_kmeans
-# input_program_tree = 'minibatch_kmeans_Params.xml'
 
 class Coverage(object):
     # Trace function
@@ -676,14 +652,17 @@ class MutationCoverageFuzzer(MutationFuzzer):
         elif len(inp_num_args) <= MAX_SIZE:
             cost_avg = np.mean(self.cost)
             cost_std = np.std(self.cost)
+            ### You can change the multiplier here to any value greater than 1 (default = 2)
             threshold = cost_avg + 2.0 * cost_std
             extr_costs = list(filter(lambda x: x >= threshold, self.cost))
-            if val_cost >= threshold and val_cost <=  cost_avg + 3.0 * cost_std:
+            ### You can change this condition and multiplier
+            if val_cost >= threshold and val_cost <=  cost_avg + 4.0 * cost_std:
                 self.population.append(self.inp)
                 self.coverages_seen.append(key_path)
                 self.cost.append(val_cost)
                 self.cost_path.append(path_cost)
-            elif val_cost > cost_avg + 3.0 * cost_std and len(extr_costs) > 30:
+            ### You can change this condition or even remove the whole elif
+            elif val_cost > cost_avg + 4.0 * cost_std and len(extr_costs) > 30:
                 extr_avg = np.mean(extr_costs)
                 extr_std = np.std(extr_costs)
                 self.prob = norm.cdf(val_cost, loc=extr_avg, scale=extr_std)
@@ -733,20 +712,14 @@ def run_driver(inp_program_instr, mutation_fuzzer):
     return mutation_fuzzer
 
 if __name__ == "__main__":
-    # Every algorithm except Booyer Moore and prime_MST 
-    seed_inputs = ["1 3","12 9 10 5","17 15 20"]
     start_time = time.time()
-    # for Boyer_Moore
+    ### Every algorithm except Booyer Moore and prime_MST 
+    seed_inputs = ["1 3","12 9 10 5","17 15 20"]
+    ### for Boyer_Moore
     # seed_inputs = ["123-ABC", "123-111", "ABAA-BA", "123456-456"]
-    # for prim MST
+    ### for prim MST
     # seed_inputs = ["0 1 3 1 2 2 2 0 1","0 1 2 1 2 3 2 3 6","0 1 3 1 3 5 2 3 4 1 2 10"]
-    #seed_inputs = ["0.11 3 4 10","-1.16 5 3 50","2.12 7 4 101"]
-    # seed_inputs = ["50 1000 50 1","150 1000 60 0","250 1000 70 0"]
-    #seed_inputs = ["400 50 10 0","430 50 10 0","100 50 10 0","150 50 10 0","180 50 10 0","210 50 10 0","240 50 10 0","275 50 10 0","300 50 10 0","330 50 10 0","350 50 10 0","450 50 10 0","500 50 10 0","520 50 10 0","530 50 10 0","550 50 10 0","580 50 10 0","610 50 10 0","650 50 10 0","700 50 10 0","719 50 10 0","745 50 10 0","800 50 10 0","820 50 10 0","850 50 10 0","870 50 10 0","900 50 10 0","920 50 10 0","950 50 10 0","970 50 10 0","990 50 10 0","1000 50 10 0"]
-    # seed_inputs = ["1000 200 10.0 10 1 1 0","2000 200 1.0 10 1 1 1","5000 200 0.1 10 1 1 0"]
-    # seed_inputs = ["10000 10 2 5 1 2 1 1 0.0001 1.0 0 1.0 100 0"]
-    # seed_inputs = ["1000 10 2 2 0 1 0 1 0 0 0.01 0.0"]
-    # seed_inputs = ["50 2 0 2 0 0 10 0.1 0 3 0.01 0 2.0 1.0 1"]
+
     inp_program_instr = FunctionCoverageRunner(input_program)
     mutation_fuzzer = MutationCoverageFuzzer(seed=seed_inputs, min_mutations = 1, max_mutations = 5)
     f1 = open("complexity_driver_EVT_" + str(input_program).split(" ")[1] + "_" + str(start_time).split(".")[0] + ".csv", "w")
