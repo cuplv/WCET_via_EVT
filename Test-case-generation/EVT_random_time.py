@@ -666,6 +666,7 @@ class MutationCoverageFuzzer(MutationFuzzer):
                 extr_avg = np.mean(extr_costs)
                 extr_std = np.std(extr_costs)
                 self.prob = norm.cdf(val_cost, loc=extr_avg, scale=extr_std)
+                ### You may change this threshold
                 if self.prob <= 0.95:
                     self.count_extreme_dist = self.time_in_ext_analysis + 1
                     self.population.append(self.inp)
@@ -733,6 +734,7 @@ if __name__ == "__main__":
             key = mutation_fuzzer.coverages_seen[i]
             f1.write(str(inp_pop) + "," + str(c1) + "," + str(c2) + "," + str(key) +"\n")
         f1.close()
+    ### The first column is input, the second column is execution time, third column is abstract cost (num. lines executed), and fourth column is path key
     for i in range(len(mutation_fuzzer.coverages_seen)):
         inp_pop = mutation_fuzzer.population[i]
         c1 = mutation_fuzzer.cost[i]
