@@ -3,3 +3,8 @@
 .Rhistory
 .ipynb_checkpoints/extreme_analysis-checkpoint.ipynb
 Rplots.pdf
+Figures/density_ball-and-beam-timings-10k.txt.png
+*.png
+Figures/threshold_Snapbuddy_timing.txt.png
+Figures/threshold_Snapbuddy_timing.txt.png
+*.pyc
